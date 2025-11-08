@@ -11,10 +11,10 @@ struct LookListView: View {
     @EnvironmentObject var viewModel: LookViewModel
     @EnvironmentObject var clothingViewModel: ClothingViewModel
     @State private var selectedEvent: String? = nil
-    @State private var showEditor = false
-    @State private var showAddLook = false
-    @State private var draftSnapshot: Data? = nil
-    @State private var draftClothingItems: [ClothingItemPlacement] = []
+    //@State private var showEditor = false
+    //@State private var showAddLook = false
+    //@State private var draftSnapshot: Data? = nil
+    //@State private var draftClothingItems: [ClothingItemPlacement] = []
 
     // Фильтр образов по событию
     var filteredLooks: [Look] {
@@ -84,10 +84,8 @@ struct LookListView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
-                        Button("Создать образ вручную") {
-                            draftSnapshot = nil
-                            draftClothingItems = []
-                            showEditor = true
+                        NavigationLink(destination: ImageEditorView()) {
+                            Text("Создать образ вручную")
                         }
                         Button("Сгенерировать образ") {}
                     } label: {
@@ -96,26 +94,6 @@ struct LookListView: View {
                     }
                 }
             }
-        }
-        .sheet(isPresented: $showEditor) {
-            ImageEditorView(initialClothingItems: []) { items, snapshot in
-                draftClothingItems = items
-                draftSnapshot = snapshot
-                showEditor = false
-            }
-            .environmentObject(clothingViewModel)
-        }
-        .onChange(of: showEditor) { newValue in
-            if newValue == false && draftSnapshot != nil {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                    showAddLook = true
-                }
-            }
-        }
-        .sheet(isPresented: $showAddLook) {
-            AddLookView(imageData: draftSnapshot ?? Data(), clothingItems: draftClothingItems)
-                .environmentObject(viewModel)
-                .environmentObject(clothingViewModel)
         }
         .tint(.black)
     }
