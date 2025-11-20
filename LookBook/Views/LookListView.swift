@@ -11,14 +11,19 @@ struct LookListView: View {
     @EnvironmentObject var viewModel: LookViewModel
     @EnvironmentObject var clothingViewModel: ClothingViewModel
     @State private var selectedEvent: String? = nil
-    //@State private var showEditor = false
-    //@State private var showAddLook = false
-    //@State private var draftSnapshot: Data? = nil
-    //@State private var draftClothingItems: [ClothingItemPlacement] = []
+    @State private var navigateToEditor = false
+    @State private var navigateToDetail = false
+    @State private var newLookItems: [ClothingItemPlacement] = []
+    @State private var newLookImageData: Data? = nil
 
     // Фильтр образов по событию
     var filteredLooks: [Look] {
         viewModel.looks.filter { selectedEvent == nil || $0.event == selectedEvent }
+    }
+
+    // Упрощаем вычисления в body
+    private var events: [String] {
+        Array(Set(viewModel.looks.map { $0.event })).sorted()
     }
 
     var body: some View {
@@ -27,7 +32,6 @@ struct LookListView: View {
                 // Горизонтальный скролл событий
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 4) {
-                        let events = Array(Set(viewModel.looks.map { $0.event })).sorted()
                         ForEach(events, id: \.self) { event in
                             Button(action: {
                                 withAnimation {
@@ -84,8 +88,8 @@ struct LookListView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
-                        NavigationLink(destination: ImageEditorView()) {
-                            Text("Создать образ вручную")
+                        Button("Создать образ вручную") {
+                            navigateToEditor = true
                         }
                         Button("Сгенерировать образ") {}
                     } label: {
@@ -94,6 +98,22 @@ struct LookListView: View {
                     }
                 }
             }
+            /*.navigationDestination(isPresented: $navigateToEditor) {
+                ImageEditorView(
+                    onSave: { items, snapshot in
+                        newLookItems = items
+                        newLookImageData = snapshot
+                        navigateToEditor = false
+                        navigateToDetail = true
+                    }
+                )
+            }
+            .navigationDestination(isPresented: $navigateToDetail) {
+                AddLookView(
+                    imageData: newLookImageData ?? Data(),
+                    clothingItems: newLookItems
+                )
+            }*/
         }
         .tint(.black)
     }

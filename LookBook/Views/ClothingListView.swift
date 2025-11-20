@@ -109,9 +109,9 @@ struct ClothingListView: View {
     }
 }
 
-struct ClothingListView_Previews: PreviewProvider {
+/*struct ClothingListView_Previews: PreviewProvider {
     static var previews: some View {
         ClothingListView()
             .environmentObject(ClothingViewModel())
     }
-}
+}*/

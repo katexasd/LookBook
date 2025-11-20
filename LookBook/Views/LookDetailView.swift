@@ -12,12 +12,15 @@ struct AddLookView: View {
     @EnvironmentObject var viewModel: LookViewModel
 
     @State private var showEditor = false
+    @State private var showCloseConfirmation = false
     @State private var event: String = ""
     @State private var season: String = ""
     @State private var isPublic: Bool = false
 
     @State private var showAlert = false
     @State private var showDeleteConfirmation = false
+    
+    @State private var navigateToEditor = false
 
     var editItem: Look?
     @State private var imageData: Data
@@ -51,12 +54,12 @@ struct AddLookView: View {
                             .shadow(color: Color.black.opacity(0.12), radius: 16, x: 0, y: 8)
 
                         Button(action: { showEditor = true }) {
-                            Text("Изменить образ")
-                                .foregroundColor(.white)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color.blue)
-                                .cornerRadius(8)
+                            Text("Редактировать образ")
+                                .foregroundColor(.blue)
+                                //.padding()
+                                //.frame(maxWidth: .infinity)
+                                //.background(Color.blue)
+                                //.cornerRadius(8)
                         }
                         .padding(.top, 8)
                     }
@@ -94,8 +97,8 @@ struct AddLookView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: { dismiss() }) {
-                    Image(systemName: "chevron.left")
+                Button(action: { showCloseConfirmation = true }) {
+                    Image(systemName: "xmark")
                         .foregroundColor(.black)
                 }
             }
@@ -121,7 +124,7 @@ struct AddLookView: View {
                         viewModel.addLook(newLook)
                     }
 
-                    dismiss()
+                    dismiss() // Закрываем LookDetailView (и ImageEditorView, если был открыт)
                 }) {
                     Image(systemName: "checkmark")
                         .foregroundColor(.black)
@@ -140,13 +143,23 @@ struct AddLookView: View {
             }
             Button("Отмена", role: .cancel) {}
         }
-        // Sheet for image editor
-        .sheet(isPresented: $showEditor) {
-            ImageEditorView(initialClothingItems: clothingItems) { updatedItems, snapshot in
-                self.clothingItems = updatedItems
-                if let s = snapshot { self.imageData = s }
-                self.showEditor = false
+        .alert("Вы действительно хотите закрыть это окно? Изменения в образе не сохранятся.", isPresented: $showCloseConfirmation) {
+            Button("Нет, остаться", role: .cancel) {}
+            Button("Да, закрыть", role: .destructive) {
+                dismiss()
             }
+        }
+        // Навигация на ImageEditorView
+        .navigationDestination(isPresented: $showEditor) {
+            ImageEditorView(
+                initialClothingItems: clothingItems,
+                isFromDetailView: true,
+                onSave: { updatedItems, snapshot in
+                    self.clothingItems = updatedItems
+                    if let snapshot = snapshot { self.imageData = snapshot }
+                    self.showEditor = false
+                }
+            )
         }
     }
 
@@ -170,4 +183,3 @@ struct AddLookView: View {
         .contentShape(Rectangle())
     }
 }
-

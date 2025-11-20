@@ -13,6 +13,7 @@ struct ImageEditorView: View {
 
     var initialClothingItems: [ClothingItemPlacement] = []
     var onSave: (([ClothingItemPlacement], Data?) -> Void)? = nil
+    @State var isFromDetailView: Bool = false
 
     @State private var clothingItems: [ClothingItemPlacement]
     @State private var showItemsSheet = false
@@ -20,8 +21,9 @@ struct ImageEditorView: View {
 
     @EnvironmentObject var clothingViewModel: ClothingViewModel
     
-    init(initialClothingItems: [ClothingItemPlacement] = [], onSave: (([ClothingItemPlacement], Data?) -> Void)? = nil) {
+    init(initialClothingItems: [ClothingItemPlacement] = [], isFromDetailView: Bool = false, onSave: (([ClothingItemPlacement], Data?) -> Void)? = nil) {
         self.initialClothingItems = initialClothingItems
+        self.isFromDetailView = isFromDetailView
         self.onSave = onSave
         self._clothingItems = State(initialValue: initialClothingItems)
     }
@@ -91,10 +93,12 @@ struct ImageEditorView: View {
             .clipShape(Rectangle())
             .navigationBarBackButtonHidden(true)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(.black)
+                if !isFromDetailView {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: { dismiss() }) {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(.black)
+                        }
                     }
                 }
                 ToolbarItem(placement: .principal) {
@@ -106,7 +110,7 @@ struct ImageEditorView: View {
                         let snapshot = captureCanvas()
                         onSave?(clothingItems, snapshot)
                     }) {
-                        Image(systemName: "chevron.right")
+                        Image(systemName: "checkmark")
                             .foregroundColor(.black)
                     }
                 }
