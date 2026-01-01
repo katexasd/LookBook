@@ -225,7 +225,7 @@ struct ImageEditorView: View {
                     .onTapGesture {
                         isSelected = true
                     }
-                    .gesture(
+                    .simultaneousGesture(
                         !isSelected ? nil : DragGesture()
                             .onChanged { value in
                                 dragOffset = value.translation
@@ -237,7 +237,7 @@ struct ImageEditorView: View {
                             }
                     )
                     // --- ПЛАВНОЕ масштабирование ---
-                    .gesture(
+                    .simultaneousGesture(
                         !isSelected ? nil : MagnificationGesture()
                             .onChanged { scale in
                                 // scale ≈ 1.0 обычно, больше — увеличение, меньше — уменьшение
@@ -265,6 +265,8 @@ struct ImageEditorView: View {
                             .foregroundStyle(.black)
                     }
                     .frame(width: 24, height: 24)
+                    .contentShape(Rectangle())
+                    .zIndex(10)
                     .offset(x: item.position.x + dragOffset.width - halfWidth - handleOffset,
                             y: item.position.y + dragOffset.height - halfHeight - handleOffset)
 

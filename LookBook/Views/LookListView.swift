@@ -98,7 +98,7 @@ struct LookListView: View {
                     }
                 }
             }
-            /*.navigationDestination(isPresented: $navigateToEditor) {
+            .navigationDestination(isPresented: $navigateToEditor) {
                 ImageEditorView(
                     onSave: { items, snapshot in
                         newLookItems = items
@@ -113,7 +113,7 @@ struct LookListView: View {
                     imageData: newLookImageData ?? Data(),
                     clothingItems: newLookItems
                 )
-            }*/
+            }
         }
         .tint(.black)
     }
@@ -127,14 +127,14 @@ struct LookItemView: View {
         ZStack {
             Rectangle()
                 .fill(Color.white)
-                .frame(width: 110, height: 110)
+                .frame(width: 110, height: 143)
                 .cornerRadius(10)
                 .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
 
             Image(uiImage: image)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 110, height: 110)
+                .frame(width: 110, height: 143)
                 .clipped()
                 .cornerRadius(10)
         }
